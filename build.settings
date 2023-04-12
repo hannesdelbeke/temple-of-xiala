@@ -5,6 +5,12 @@
 
 settings =
 {
+
+    window =
+    {
+        defaultMode = "fullscreen",
+    },  
+    
 	orientation =
 	{
 		-- Supported values for orientation:
@@ -59,6 +65,10 @@ settings =
 			-- required
 			publisherId = "sg.btn",
 		},
+		["plugin.steamworks"] =
+    {
+        publisherId = "com.coronalabs"
+    },
 
 
 	},

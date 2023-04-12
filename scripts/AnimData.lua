@@ -8,13 +8,13 @@ local options =
 {
     width = 20,
     height = 20,
-    numFrames = 24,
+    numFrames = 48,
     border = 0
     --optional parameters; used for scaled content support
     -- sheetContentWidth = 169,  -- width of original 1x size of entire sheet
     -- sheetContentHeight = 43   -- height of original 1x size of entire sheet
 }
- M.imageSheetTiles = graphics.newImageSheet( "textures/sourceTilesettest.png", options )
+ M.imageSheetTiles = graphics.newImageSheet( "textures/tileSheet.png", options )
 
 ------------------------------------------------------------------------------
 -- spritesheet animations
@@ -60,7 +60,7 @@ M.sequences_spritesheet = {
     },
     {
         name = "destroyDoor",
-        start = 9,
+        start = 8,
         count = 5,
         time = 400,
         loopCount = 1,
@@ -68,7 +68,7 @@ M.sequences_spritesheet = {
     },
     {
         name = "top_idleSlot",
-        start = 14,
+        start = 13,
         count = 4,
         time = 400,
         loopCount = 0,
@@ -76,7 +76,15 @@ M.sequences_spritesheet = {
     },
     {
         name = "bot_idleSlot",
-        start = 18,
+        start = 17,
+        count = 4,
+        time = 400,
+        loopCount = 0,
+        loopDirection = "forward"
+    },
+    {
+        name = "teleport",
+        start = 21,
         count = 4,
         time = 400,
         loopCount = 0,
@@ -93,7 +101,7 @@ local options =
 {
     width = 16,
     height = 16,
-    numFrames = 5,
+    numFrames = 10,
     border = 0
 }
 
@@ -111,6 +119,14 @@ M.sequences_gem = {
         name = "enable",
         start = 1,
         count = 5,
+        time = 500,
+        loopCount = 1,
+        loopDirection = "bounce"
+    },
+    {
+        name = "noMoves",
+        start = 5,
+        count = 2,
         time = 500,
         loopCount = 1,
         loopDirection = "bounce"
@@ -142,7 +158,7 @@ M.sequences_player = {
         loopDirection = "forward"
     },
     {
-        name = "delight",
+        name = "delight", -- blue light dissapears
         start = 3,
         count = 3,
         time = 300,
@@ -203,13 +219,38 @@ M.sequences_temple = {
 M.imageSheetTemple = graphics.newImageSheet( "textures/temple.png", options )
 
 ------------------------------------------------------------------------------
+--lvlselect background
+------------------------------------------------------------------------------
+local options =
+{
+    width = 140,
+    height = 60,
+    numFrames = 1,
+    border = 0
+}
+
+M.sequences_lvlSelectBackground = {
+    -- consecutive frames sequence
+    {
+        name = "temple",
+        start = 1,
+        count = 1,
+        time = 600,
+        loopCount = 0,
+        loopDirection = "forward"
+    }
+}
+
+M.imageSheetLevelSelectBackground = graphics.newImageSheet( "textures/lvlSelectBackground.png", options )
+
+------------------------------------------------------------------------------
 --retry button
 ------------------------------------------------------------------------------
 local options =
 {
     width = 40,
     height = 20,
-    numFrames = 3,
+    numFrames = 12,
     border = 0
 }
 
@@ -222,8 +263,25 @@ M.sequences_retry = {
         time = 500,
         loopCount = 1,
         loopDirection = "forward"
+    },
+    {
+        name = "enabled",
+        start = 2,
+        count = 1,
+        time = 500,
+        loopCount = 1,
+        loopDirection = "forward"
+    },
+    {
+        name = "charged",
+        start = 9,
+        count = 4,
+        time = 500,
+        loopCount = 0,
+        loopDirection = "forward"
     }
 }
+
 
 M.imageSheetRetry = graphics.newImageSheet( "textures/retry.png", options )
 

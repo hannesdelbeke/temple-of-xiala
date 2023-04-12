@@ -25,39 +25,41 @@ currentLevel = 1
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
 -- -----------------------------------------------------------------------------------
 
-	local myHoverListener = function(event)
-		print("hover")
-		if event.phase == "began" then
-		-- respond to the hover event here
-			print(event.phase, event.target, event.x, event.y)
-		end
+	-- local myHoverListener = function(event)
+	-- 	print("hover")
+	-- 	if event.phase == "began" then
+	-- 	-- respond to the hover event here
+	-- 		print(event.phase, event.target, event.x, event.y)
+	-- 	end
+  --
+	-- 	if event.phase == "ended" then
+	-- 	-- respond to the hover event here
+	-- 		print(event.phase, event.target, event.x, event.y)
+	-- 	end
+  --
+	-- end
 
-		if event.phase == "ended" then
-		-- respond to the hover event here
-			print(event.phase, event.target, event.x, event.y)
-		end
+function setTextToContinue()
+	playButton.text = localisationManager.continue
+	btnMngr.originalText = playButton.text
 
-	end
-
-
+end
 
 local function gotoGame()
-	playButton.text = "Continue"
-	btnMngr.originalText = playButton.text
-	-- btnMngr:refresh()
-
-	composer.gotoScene( "game" )
+	timer.performWithDelay( 500 , setTextToContinue)
+	composer.gotoScene( "game" ,changeSceneOptions )
 end
 
 local function gotoLevelSelect()
-	composer.gotoScene( "levelSelect" )
+	composer.gotoScene( "levelSelect" ,changeSceneOptions )
 end
 
 local function gotoCredits()
-	composer.gotoScene( "credits" )
+	composer.gotoScene( "credits"  ,changeSceneOptions)
 end
 
 --local function
+
 
 
 function onKeyEvent(event)
@@ -127,6 +129,8 @@ function scene:create( event )
 	background.y = display.contentCenterY
 	background.xScale = display.contentHeight/70
 	background.yScale = display.contentHeight/70
+
+	
 	-- background.xScale = 1.5
 	-- background.yScale = 1.5
 
@@ -156,40 +160,53 @@ function scene:create( event )
 		logo.x = display.contentWidth+100
 		logo.y = 300
 
+	local yOffsetParent = 350
+	local yOffset = 165
+	local textOptions = {
+		parent = sceneGroup,
+		text = localisationManager.play, --"Play",
+		x = display.contentWidth+100, 
+		y = yOffset*1 + yOffsetParent, 
+		font = native.systemFont, 
+		fontSize = textSize*scale,
+		-- width = 1200,
+		-- height = 150,
+		align = "center"
+	}
 
-		yOffset = 50
-	playButton = display.newText( sceneGroup, "Play", display.contentWidth+100, 500 + yOffset, native.systemFont, textSize*scale )
-	local lvlSelectButton = display.newText( sceneGroup, "Level Select", display.contentWidth+100, 600 + yOffset, native.systemFont, textSize*scale )
---local optionButton = display.newText( sceneGroup, "Options",display.contentWidth+100, 700, native.systemFont, textSize*scale )
-	local creditBtn = display.newText( sceneGroup, "Credits", display.contentWidth+100, 700 + yOffset, native.systemFont, textSize*scale )
-	local quitBtn = display.newText( sceneGroup, "Quit", display.contentWidth+100, 900 + yOffset, native.systemFont, textSize*scale )
-  --
-	-- playButton.index = 1
-	-- lvlSelectButton.index = 2
-	-- creditBtn.index = 3
-	-- quitBtn.index = 4
+	playButton = 			display.newText( textOptions )
+	textOptions.text = 		localisationManager.levelSelect
+	textOptions.y = 		2*yOffset + yOffsetParent
 
-	-- playButton:addEventListener( "tap", gotoGame )
-	-- lvlSelectButton:addEventListener( "tap", gotoLevelSelect )
-	-- creditBtn:addEventListener( "tap", gotoCredits ) --gotCredits
-	-- creditBtn:addEventListener( "tap", quitGame )
+	local lvlSelectButton = display.newText( textOptions )
+	textOptions.text = 		localisationManager.credits
+	textOptions.y = 		3* yOffset + yOffsetParent
+	local creditBtn = 		display.newText( textOptions )
+	textOptions.text =		localisationManager.quit
+	textOptions.y = 		4* yOffset + yOffsetParent
+	local quitBtn = 		display.newText( textOptions )
 
-	-- 	logo:addEventListener("mouseHover", myHoverListener)
-  --
-	-- lvlSelectButton:addEventListener("mouseHover", myHoverListener)
-	-- creditBtn:addEventListener("mouseHover", myHoverListener)
-	-- creditBtn:addEventListener("mouseHover", myHoverListener)
+
+	playButton.command = gotoGame
+	lvlSelectButton.command = gotoLevelSelect
+	creditBtn.command = gotoCredits
+	quitBtn.command = quitGame
+
 
 	local buttons = {playButton,lvlSelectButton,creditBtn,quitBtn}
-	local commands = {gotoGame,gotoLevelSelect,gotoCredits,quitGame  }
-	btnMngr = buttonManager:create(buttons,commands)
+	btnMngr = buttonManager:create(buttons)
 
-				-- btnMngr.buttons = {playButton,lvlSelectButton,creditBtn,quitBtn}
-				-- btnMngr.currentButton = playButton
 
-	-- TODO remove this later
-	-- skip menu for debug purpose
-	--gotoGame()
+
+
+	--set currentlevel based on save data 
+    currentLevel = saveManager:getLastActiveLevel() + 1
+    if currentLevel~=1 then setTextToContinue() end
+    print ("should load level")
+    print (currentLevel)
+
+
+
 end
 
 
@@ -197,6 +214,9 @@ end
 function scene:show( event )
 	-- composer.removeScene("menu_overlay")
 	-- composer.hideOverlay("menu_overlay")
+
+	composer.hideOverlay( "menu_overlay" )
+
 		Runtime:removeEventListener( "key", onKeyEvent )
 		Runtime:addEventListener( "key", onKeyEvent )
 	local sceneGroup = self.view
@@ -251,5 +271,6 @@ scene:addEventListener( "show", scene )
 scene:addEventListener( "hide", scene )
 scene:addEventListener( "destroy", scene )
 -- -----------------------------------------------------------------------------------
+
 
 return scene

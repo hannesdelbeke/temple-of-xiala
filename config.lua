@@ -5,6 +5,10 @@
 
 application =
 {
+	steamworks =
+    {
+        appId = "774411"
+    },
 	content =
 	{
 		-- width = 320,

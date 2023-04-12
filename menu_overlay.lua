@@ -4,6 +4,7 @@ local scene = composer.newScene()
 
 local buttonManager =      require("scripts.buttonManager")
 local btnMngr = nil
+local retryLevelCommand
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -14,23 +15,29 @@ local btnMngr = nil
 --
 --local function
 
-
 local function gotoGame()
 	--composer.gotoScene( "game" )
-	composer.hideOverlay( "fade", 0 )
+	composer.hideOverlay( "fade", 200 )
 end
+
+local function retryLevel()
+	retryLevelCommand()
+	gotoGame()
+end
+
+
 local function gotoMenu()
-	composer.gotoScene( "menu" )
+	composer.gotoScene( "menu",changeSceneOptions )
 end
 
-local function gotoLevelSelect()
-	composer.gotoScene( "levelSelect" )
-	--composer.hideScene( "levelSelect" )
-end
+-- local function gotoLevelSelect()
+-- 	composer.gotoScene( "levelSelect" )
+-- 	--composer.hideScene( "levelSelect" )
+-- end
 
-local function gotoCredits()
-	composer.gotoScene( "credits" )
-end
+-- local function gotoCredits()
+-- 	composer.gotoScene( "credits" )
+-- end
 
 
 -- -----------------------------------------------------------------------------------
@@ -55,17 +62,42 @@ function scene:create( event )
 	-- obj.x, obj.y = display.contentCenterX, display.contentCenterY
 	-- obj.xScale = scale * 2
 	-- obj.yScale = scale * 2
+	retryLevelCommand = event.params.retryLevelCommand
+
+	local textOptions = {
+		parent = sceneGroup,
+		text = "Continue",
+		x = display.contentCenterX, 
+		y = 400, 
+		font = native.systemFont, 
+		fontSize = textSize*scale,
+		align = "center"
+	}
+
+	local playButton = display.newText( textOptions)
+	textOptions.text = "Retry"
+	textOptions.y = 600
+	local retryBtn = display.newText( textOptions )
+	textOptions.text = "Menu"
+	textOptions.y = 800
+	local menuBtn = display.newText( textOptions )
+	
+-- local playButton = display.newText( sceneGroup, "Continue", display.contentCenterX, 400, native.systemFont, textSize*scale )
+-- 	local retryBtn = display.newText( sceneGroup, "Retry", display.contentCenterX, 600, native.systemFont, textSize*scale )
+-- 	local menuBtn = display.newText( sceneGroup, "Menu", display.contentCenterX,800 , native.systemFont, textSize*scale )
+
+	-- 	playButton:addEventListener( "tap", gotoGame )
+	-- retryBtn:addEventListener( "tap", retryLevel )
+	-- menuBtn:addEventListener( "tap", gotoMenu )
+
+	playButton.command = gotoGame
+	retryBtn.command = retryLevel
+	menuBtn.command = gotoMenu
 
 
-	local playButton = display.newText( sceneGroup, "Continue", display.contentCenterX, 500, native.systemFont, textSize*scale )
-	local menuBtn = display.newText( sceneGroup, "Menu", display.contentCenterX, 700, native.systemFont, textSize*scale )
-
-	playButton:addEventListener( "tap", gotoGame )
-	menuBtn:addEventListener( "tap", gotoMenu )
-
-	local buttons = {playButton, menuBtn}
-	local commands = {gotoGame,gotoMenu  }
-	btnMngr = buttonManager:create(buttons,commands)
+	local buttons = {playButton, retryBtn, menuBtn}
+	--local commands = {gotoGame,retryLevel, gotoMenu  }
+	btnMngr = buttonManager:create(buttons)
 
 
 	-- local highScoresButton = display.newText( sceneGroup, "High Scores", display.contentCenterX, 400, native.systemFont, 44 )
@@ -120,6 +152,7 @@ function scene:show( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
+			  audio.play( audioManager.openMenu )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
@@ -143,11 +176,14 @@ function scene:hide( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is on screen (but is about to go off screen)
+				  audio.play( audioManager.closeMenu )
 
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
 			Runtime:removeEventListener( "key", onKeyEvent )
-      parent:resumeGame()
+			if parent.name == "Game" then
+      	parent:resumeGame()
+			end
 			btnMngr:pause()
 	end
 end

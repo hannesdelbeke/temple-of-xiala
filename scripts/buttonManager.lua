@@ -1,22 +1,51 @@
 local M = {}
 M.__index = M
 
-local function myHoverListener (event)
-	parent = event.target
-	parent.btnMngr:setCurrentBtn(parent.index)
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
 end
 
-function M:create(buttons, commands)
+function string.ends(String,End)
+   return End=='' or string.sub(String,-string.len(End))==End
+end
+
+local function myHoverListener (event)
+	if event.phase == "began" or event.phase =="moved" then
+		parent = event.target
+		if parent.btnMngr.enableInput then
+			parent.btnMngr:setCurrentBtn(parent.index)
+		end
+
+	elseif event.phase == "ended" then
+		if parent.btnMngr.enableInput then
+			-- parent.btnMngr:setCurrentBtn(parent.index)
+			print ("ended")
+			print (event)
+			parent.btnMngr:restoreButtonText()
+		end
+
+	end
+end
+
+
+local function clickButton(event)
+	audioManager.playClickButton()
+	target = event.target
+	target.btnMngr:setCurrentBtn(target.index )
+	target.btnMngr:pressButton()
+end
+
+function M:create(buttons)
    local obj = {}             -- our new object
    setmetatable(obj,M)  -- make Account handle lookup
 	-- Runtime:addEventListener( "key", onKeyEvent )
 	obj.paused = false
 	obj.buttons = buttons
-	obj.commands = commands
+	--obj.commands = commands
 	obj.enableInput = true
 
 	for k,v in pairs(buttons) do
-		v:addEventListener( "tap", commands[k] )
+		v:addEventListener( "tap", clickButton )
 		v:addEventListener( "mouseHover", myHoverListener)
 			--playButton:addEventListener("mouseHover", myHoverListener)
 			v.index = k
@@ -30,6 +59,11 @@ function M:create(buttons, commands)
 	return obj
 end
 
+function M:restoreButtonText()
+	if self.currentButton.text then
+		self.currentButton.text = self.originalText
+	end
+end
 
 function M:setCurrentBtn(i)
 	if self.enableInput then
@@ -40,13 +74,45 @@ function M:setCurrentBtn(i)
 			i =  table.getn(self.buttons)
 		end
 
-		self.currentButton.text = self.originalText
-		self.index = i
-		self.currentButton = self.buttons[i]
+		if i ~= self.index then
+			audioManager.playSelectButton()
+		--	button = self.currentButton
+
+			-- if self.currentButton.text then
+			-- 	self.currentButton.text = self.originalText
+			-- end
+			self:restoreButtonText()
+
+			self.index = i
+			self.currentButton = self.buttons[i]
+
+			self:updateTextButton()
+			-- if self.currentButton.text then
+			-- 	self.originalText = self.currentButton.text
+			-- 	self.currentButton.text = "- " .. self.currentButton.text .. " -"
+			-- end
+
+		end
+		self:updateTextButton()
+
+		-- print ( string.starts(self.currentButton.text, "- "))
+		-- if self.currentButton.text then
+		-- 	self.originalText = self.currentButton.text
+		-- 	self.currentButton.text = "- " .. self.currentButton.text .. " -"
+		-- end
+
+	end
+end
+
+function M:updateTextButton()
+	-- and
+	if  self.currentButton.text and not ( string.starts(self.currentButton.text, "- ")) then
 		self.originalText = self.currentButton.text
 		self.currentButton.text = "- " .. self.currentButton.text .. " -"
 	end
+
 end
+
 
 -- function M:refresh()
 -- 	self.originalText = self.currentButton.text
@@ -68,7 +134,7 @@ function M:resume()
 	end
 	print("resume btn mngr")
 
-	-- this shit breaks
+	-- this breaks
 	-- self.originalText = self.currentButton.text
 	-- self.currentButton.text = "- " .. self.currentButton.text .. " -"
 
@@ -83,12 +149,26 @@ function M:getPrevButton()
 	--self:setCurrentBtn()
 	self:setCurrentBtn(self.index - 1 )
 end
+function M:getButtonAtIndex(i)
+	--self:setCurrentBtn()
+	self:setCurrentBtn( i )
+end
+
 
 function M:pressButton()
 	--self:setCurrentBtn()
 	print("press button")
-	self.commands[self.index]()
+	audioManager.playClickButton()
 	self.enableInput = false
+	button = self.buttons[self.index]
+	if button.arguments then
+		button.command(button.arguments)
+	else
+		button.command()
+
+	end
+
+--	self.commands[self.index]()
 end
 
 -- function onKeyEvent(event)
