@@ -7,3 +7,9 @@
 - 7 ⭐[Temple of Xiala](https://store.steampowered.com/app/774411/Temple_of_Xiala/)
 
 repo needs a cleanup
+
+Also contains all sprites, e.g.  
+![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/tileSheet.png)
+![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/spritesheet.png)  
+![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/dude.png)
+![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/gem.png)  
