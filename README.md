@@ -8,7 +8,7 @@
 
 repo needs a cleanup
 
-Also contains all sprites, e.g.  
+## Sprites
 ![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/tileSheet.png)
 ![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/spritesheet.png)  
 ![](https://raw.githubusercontent.com/hannesdelbeke/temple-of-xiala/main/textures/dude.png)
